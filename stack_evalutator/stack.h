@@ -3,6 +3,7 @@
 #include <cassert>
 #include "node.h"
 
+// doubly linked list로 구성된 스택, 제일 위의 값을 top_ptr로 가리킴.
 template <class Item>
 class stack {
 private:
