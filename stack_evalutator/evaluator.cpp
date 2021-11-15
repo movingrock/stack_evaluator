@@ -4,6 +4,7 @@
 #include "stack.h"
 #include "stack.cpp"
 
+//엔터치기 전까지의 입력값을 받아 넘김
 string evaluator::read_expression() {
 	string str;
 
@@ -12,6 +13,7 @@ string evaluator::read_expression() {
 	return str;
 }
 
+//입력받은 infix수식을 postfix수식으로 변환함. 변수도 입력받음.
 string evaluator::convert_to_postfix(string s) {
 	const char DECIMAL = '.';
 	const char LEFT_PARENTHESIS = '(';
@@ -19,12 +21,11 @@ string evaluator::convert_to_postfix(string s) {
 
 	stack<char>* operations = new stack<char>();
 	string output;
-
 	for (string::iterator iter = s.begin(); iter != s.end(); ++iter) {
 		if (*iter == LEFT_PARENTHESIS) {
 			operations->push(*iter);
 		}
-		else if (*iter == DECIMAL || isdigit(*iter)) {
+		else if (*iter == DECIMAL || isdigit(*iter) || isalpha(*iter)) {
 			output.push_back(*iter);
 		}
 		else if (strchr("+-*/", *iter)) {
@@ -46,7 +47,7 @@ string evaluator::convert_to_postfix(string s) {
 		}
 	}
 
-	while (!operations->empty()) {
+	while (!operations->empty()) { //마지막에 스택에 쌓여있는 연산자를 빼내줌.
 		output.push_back(operations->top());
 		operations->pop();
 	}
@@ -54,15 +55,22 @@ string evaluator::convert_to_postfix(string s) {
 }
 
 
-double evaluator::evaluate_postfix(string s) { //변수를 넘겨줬을 경우, 변수 값을 입력하게 해야됨. 무친
+// postfix string의 연산을 실행함. 변수를 입력받으면 변수에 넣을 값을 물어봄.
+double evaluator::evaluate_postfix(string s) {
 	const char DECIMAL = '.';
 
 	stack<double>* evaluator = new stack<double>();
 	double result;
-
 	for (string::iterator iter = s.begin(); iter != s.end(); ++iter) {
 		if (*iter == DECIMAL || isdigit(*iter)) {
 			evaluator->push(*iter -'0');
+		}
+		else if(isalpha(*iter)){
+			double temp;
+			cout << *iter <<"에 대입할 숫자를 입력하세요: ";
+			cin >> temp;
+			cin.ignore(); // cin 이후 버퍼를 비워줘야함. -> read_expression에서 getline으로 받았기때문
+			evaluator->push(temp);
 		}
 		else if (strchr("+-*/", *iter)) {
 			double operand1, operand2;
